@@ -101,6 +101,7 @@ SRCS += \
   $(TOP)/tinyusb/src/tusb.c \
   $(TOP)/tinyusb/src/common/tusb_fifo.c \
   $(TOP)/tinyusb/src/class/cdc/cdc_device.c \
+  $(TOP)/tinyusb/src/class/msc/msc_device.c \
   $(TOP)/tinyusb/src/device/usbd.c \
   $(TOP)/tinyusb/src/device/usbd_control.c \
   $(TOP)/tinyusb/src/portable/microchip/samd/dcd_samd.c \
@@ -120,6 +121,7 @@ SRCS += \
   $(TOP)/watch-library/hardware/watch/watch_storage.c \
   $(TOP)/watch-library/hardware/watch/watch_deepsleep.c \
   $(TOP)/watch-library/hardware/watch/watch_private.c \
+  $(TOP)/watch-library/hardware/watch/watch_msc.c \
   $(TOP)/watch-library/hardware/watch/watch.c \
   $(TOP)/watch-library/hardware/hal/src/hal_atomic.c \
   $(TOP)/watch-library/hardware/hal/src/hal_delay.c \

@@ -328,7 +328,7 @@ tusb_desc_device_t const desc_device =
     .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
 
     .idVendor           = 0x1209,
-    .idProduct          = 0x2151,
+    .idProduct          = 0x2152,
     .bcdDevice          = 0x0100,
 
     .iManufacturer      = 0x01,
@@ -351,14 +351,18 @@ uint8_t const * tud_descriptor_device_cb(void) {
 enum {
   ITF_NUM_CDC = 0,
   ITF_NUM_CDC_DATA,
+  ITF_NUM_MSC,
   ITF_NUM_TOTAL
 };
 
-#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN)
+#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_MSC_DESC_LEN)
 
 #define EPNUM_CDC_NOTIF   0x81
 #define EPNUM_CDC_OUT     0x02
 #define EPNUM_CDC_IN      0x82
+
+#define EPNUM_MSC_OUT     0x05
+#define EPNUM_MSC_IN      0x85
 
 
 uint8_t const desc_fs_configuration[] = {
@@ -367,6 +371,9 @@ uint8_t const desc_fs_configuration[] = {
 
   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
+
+  // Interface number, string index, EP Out & EP In address, EP size
+  TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, 5, EPNUM_MSC_OUT, EPNUM_MSC_IN, 64),
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
@@ -389,6 +396,7 @@ char const* string_desc_arr [] =
   "TinyUSB Device",              // 2: Product
   "123456",                      // 3: Serials, should use chip ID
   "TinyUSB CDC",                 // 4: CDC Interface
+  "TinyUSB MSC",                 // 5: MSC Interface
 };
 
 static uint16_t _desc_str[32];
