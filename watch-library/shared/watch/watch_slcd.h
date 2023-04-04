@@ -84,6 +84,12 @@ void watch_clear_display(void);
   */
 void watch_display_string(char *string, uint8_t position);
 
+void watch_display_segment(uint8_t position, uint8_t bit_pos, bool on);
+
+uint64_t watch_convert_char_to_segdata(uint8_t character, uint8_t position);
+
+void watch_display_invert(bool);
+
 /** @brief Turns the colon segment on.
   */
 void watch_set_colon(void);

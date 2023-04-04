@@ -33,7 +33,9 @@ static const uint32_t IndicatorSegments[] = {
     SLCD_SEGID(1, 10), // WATCH_INDICATOR_LAP
 };
 
-void watch_display_character(uint8_t character, uint8_t position) {
+static bool invert = false;
+
+uint64_t watch_convert_char_to_segdata(uint8_t character, uint8_t position) {
     // special cases for positions 4 and 6
     if (position == 4 || position == 6) {
         if (character == '7') character = '&'; // "lowercase" 7
@@ -64,37 +66,57 @@ void watch_display_character(uint8_t character, uint8_t position) {
     } else {
         if (character == 'R') character = 'r'; // R needs to be lowercase almost everywhere
     }
-    if (position == 0) {
-        watch_clear_pixel(0, 15); // clear funky ninth segment
-    } else {
+    if (position != 0) {
         if (character == 'I') character = 'l'; // uppercase I only works in position 0
     }
 
-    uint64_t segmap = Segment_Map[position];
-    uint64_t segdata = Character_Set[character - 0x20];
+    return Character_Set[character - 0x20];
+}
 
-    for (int i = 0; i < 8; i++) {
-        uint8_t com = (segmap & 0xFF) >> 6;
-        if (com > 2) {
-            // COM3 means no segment exists; skip it.
-            segmap = segmap >> 8;
-            segdata = segdata >> 1;
-            continue;
-        }
-        uint8_t seg = segmap & 0x3F;
+static const uint8_t vert_invert_map[8] = {
+    3, 4, 5, 0, 1, 2, 6, 7,
+};
 
-        if (segdata & 1)
-          watch_set_pixel(com, seg);
-        else
-          watch_clear_pixel(com, seg);
+void watch_display_segment(uint8_t position, uint8_t bit_pos, bool on) {
+    uint64_t segmap = Segment_Map[position] >> (8 * bit_pos);
+    uint8_t com = (segmap & 0xFF) >> 6;
 
-        segmap = segmap >> 8;
-        segdata = segdata >> 1;
+    if (com > 2) {
+        // COM3 means no segment exists; skip it.
+        return;
     }
 
+    uint8_t seg = segmap & 0x3F;
+
+    if (on) {
+        watch_set_pixel(com, seg);
+    } else {
+        watch_clear_pixel(com, seg);
+    }
+}
+
+static void watch_display_segdata(uint64_t segdata, uint8_t position) {
+    for (int i = 0; i < 8; i++) {
+        uint8_t bit_pos = invert ? vert_invert_map[i] : i;
+        watch_display_segment(position, bit_pos, (1 << i) & segdata);
+    }
+}
+
+void watch_display_invert(bool inv) {
+    invert = inv;
+}
+
+void watch_display_character(uint8_t character, uint8_t position) {
+    watch_display_segdata(watch_convert_char_to_segdata(character, position), position);
+
     if (character == 'T' && position == 1) watch_set_pixel(1, 12); // add descender
-    else if (position == 0 && (character == 'B' || character == 'D')) watch_set_pixel(0, 15); // add funky ninth segment
-    else if (position == 1 && (character == 'B' || character == 'D' || character == '@')) watch_set_pixel(0, 12); // add funky ninth segment
+    else if (position == 1 && (character == 'B' || character == 'D' || character == 'b' || character == 'd' || character == '@')) watch_set_pixel(0, 12); // add funky ninth segment
+    else if (position == 0 && (character == 'B' || character == 'D')) {
+        // add funky ninth segment
+        watch_set_pixel(0, 15);
+    } else {
+        watch_clear_pixel(0, 15);
+    }
 }
 
 void watch_display_character_lp_seconds(uint8_t character, uint8_t position) {
@@ -133,7 +155,7 @@ void watch_display_string(char *string, uint8_t position) {
     // uncomment this line to see screen output on terminal, i.e.
     //   FR  29
     // 11 50 23
-    // note that for partial displays (positon > 0) it will only show the characters that were updated.
+    // note that for partial displays (position > 0) it will only show the characters that were updated.
     // printf("________\n  %c%c  %c%c\n%c%c %c%c %c%c\n--------\n", (position > 0) ? ' ' : string[0], (position > 1) ? ' ' : string[1 - position], (position > 2) ? ' ' : string[2 - position], (position > 3) ? ' ' : string[3 - position], (position > 4) ? ' ' : string[4 - position], (position > 5) ? ' ' : string[5 - position], (position > 6) ? ' ' : string[6 - position], (position > 7) ? ' ' : string[7 - position], (position > 8) ? ' ' : string[8 - position], (position > 9) ? ' ' : string[9 - position]);
 }
 
