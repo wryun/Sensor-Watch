@@ -150,6 +150,7 @@ SRCS += \
   $(TOP)/watch-library/hardware/hpl/systick/hpl_systick.c \
   $(TOP)/watch-library/shared/driver/thermistor_driver.c \
   $(TOP)/watch-library/shared/driver/lis2dw.c \
+  $(TOP)/watch-library/shared/driver/opt3001.c \
   $(TOP)/watch-library/shared/driver/spiflash.c \
   $(TOP)/watch-library/shared/watch/watch_private_buzzer.c \
   $(TOP)/watch-library/shared/watch/watch_private_display.c \
@@ -195,6 +196,7 @@ SRCS += \
   $(TOP)/watch-library/simulator/watch/watch_private.c \
   $(TOP)/watch-library/simulator/watch/watch.c \
   $(TOP)/watch-library/shared/driver/thermistor_driver.c \
+  $(TOP)/watch-library/shared/driver/opt3001.c \
   $(TOP)/watch-library/shared/watch/watch_private_buzzer.c \
   $(TOP)/watch-library/shared/watch/watch_private_display.c \
   $(TOP)/watch-library/shared/watch/watch_utility.c \
@@ -203,6 +205,15 @@ endif
 
 ifeq ($(LED), BLUE)
 CFLAGS += -DWATCH_IS_BLUE_BOARD
+endif
+
+ifeq ($(COLOR), BLUE)
+CFLAGS += -DWATCH_IS_BLUE_BOARD
+endif
+
+ifeq ($(COLOR), RED)
+CFLAGS += -DWATCH_INVERT_LED_POLARITY
+CFLAGS += -DNO_FREQCORR
 endif
 
 ifdef FIRMWARE

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 Christian Chapman
+ * Copyright (c) 2023 Joey Castillo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,36 @@
  * SOFTWARE.
  */
 
+#ifndef FLASHLIGHT_FACE_H_
+#define FLASHLIGHT_FACE_H_
 
-/* mc Morse code reading methods
-*/
-#include "stdint.h"
+#include "movement.h"
 
-#define BUFFLEN 5
+/*
+ * A flashlight for use with the Flashlight sensor board.
+ *
+ * When the watch face appears, the display will show "FL" in the top two positions.
+ * Pressing the Light button will toggle the flashlight on and off.
+ *
+ */
+
 typedef struct {
-    char b[BUFFLEN];
-    uint8_t bidx;
-} mc_state_t;
+    // Anything you need to keep track of, put it here!
+    uint8_t unused;
+} flashlight_state_t;
 
-// MC_DEC_KEY represents a binary tree of International Morse Code. 
-// where '.' = 0 and '-' = 1. Levels of the tree are concatenated.
-//
-// Capitals denote special characters:
-// C = Ch digraph
-// V = VERIFY (ITU-R "UNDERSTOOD")
-// R = REPEAT
-// W = WAIT
-// S = START TRANSMISSION
-// E = END OF WORK
-static const char MC_DEC_KEY[] = " etianmsurwdkgohvf\0l\0pjbxcyzq\0C\x35\x34V\x33\0R\0\x32W\0+\0\0\0\0\x31\x36=/\0\0S(\0\x37\0\0\0\x38\0\x39\x30\0\0\0\0\0E\0\0\0\0\0\0?_\0\0\0\0\"\0\0.\0\0\0\0@\0\0\0'\0\0-\0\0\0\0\0\0\0\0;!\0)\0\0\0\0\0,\0\0\0\0:\0\0\0\0\0\0\0";
-    
-void mc_reset(mc_state_t * mcb);
-void mc_input(mc_state_t * mc, char c);
-char mc_dec(char b[BUFFLEN]);
+void flashlight_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
+void flashlight_face_activate(movement_settings_t *settings, void *context);
+bool flashlight_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
+void flashlight_face_resign(movement_settings_t *settings, void *context);
+
+#define flashlight_face ((const watch_face_t){ \
+    flashlight_face_setup, \
+    flashlight_face_activate, \
+    flashlight_face_loop, \
+    flashlight_face_resign, \
+    NULL, \
+})
+
+#endif // FLASHLIGHT_FACE_H_
 
