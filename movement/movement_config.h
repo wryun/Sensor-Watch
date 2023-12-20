@@ -40,7 +40,7 @@ const watch_face_t watch_faces[] = {
     voltage_face,
     preferences_face,
     set_time_face,
-    finetune_face,
+    //finetune_face,
     nanosec_face,
 };
 
