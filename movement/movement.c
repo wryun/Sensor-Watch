@@ -522,7 +522,7 @@ bool app_loop(void) {
             event.event_type = EVENT_TIMEOUT;
         }
         event.subsecond = movement_state.subsecond;
-        watch_faces[movement_state.current_watch_face].loop(event, &movement_state.settings, watch_face_contexts[movement_state.current_watch_face]);
+        can_sleep &&= watch_faces[movement_state.current_watch_face].loop(event, &movement_state.settings, watch_face_contexts[movement_state.current_watch_face]);
         event.event_type = EVENT_NONE;
         if (movement_state.settings.bit.to_always && movement_state.current_watch_face != 0) {
             // ...but if the user has "timeout always" set, give it the boot.
