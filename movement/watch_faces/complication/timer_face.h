@@ -22,14 +22,11 @@
  * SOFTWARE.
  */
 
-//-----------------------------------------------------------------------------
-
 #ifndef TIMER_FACE_H_
 #define TIMER_FACE_H_
 
-#include "movement.h"
-
 /*
+ * TIMER face
  * Advanced timer/countdown face with pre-set timer lengths
  * 
  * This watch face provides the functionality of starting a countdown by choosing 
@@ -53,7 +50,9 @@
  * 
  */
 
-#define TIMER_SLOTS 4           // offer 9 timer slots
+#include "movement.h"
+
+#define TIMER_SLOTS 4
 
 typedef enum {
     waiting,

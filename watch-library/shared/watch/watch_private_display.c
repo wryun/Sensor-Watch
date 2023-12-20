@@ -111,7 +111,7 @@ void watch_display_character(uint8_t character, uint8_t position) {
 
     if (character == 'T' && position == 1) watch_set_pixel(1, 12); // add descender
     else if (position == 1 && (character == 'B' || character == 'D' || character == 'b' || character == 'd' || character == '@')) watch_set_pixel(0, 12); // add funky ninth segment
-    else if (position == 0 && (character == 'B' || character == 'D')) {
+    else if (position == 0 && (character == 'B' || character == 'D' || character == '@')) {
         // add funky ninth segment
         watch_set_pixel(0, 15);
     } else {
