@@ -315,24 +315,30 @@ void movement_request_wake() {
 }
 
 void movement_play_signal(void) {
-    bool buzzer_enabled = watch_is_buzzer_or_led_enabled();
-    if (!buzzer_enabled) {
-        watch_enable_buzzer();
-    }
-    watch_buzzer_play_note(BUZZER_NOTE_C8, 75);
-    watch_buzzer_play_note(BUZZER_NOTE_REST, 100);
-    watch_buzzer_play_note(BUZZER_NOTE_C8, 100);
-    if (!buzzer_enabled) {
-        watch_disable_buzzer();
-    }
-}
-
-void movement_play_tune(void) {
-    if (!watch_is_buzzer_or_led_enabled()) {
-        watch_enable_buzzer();
-        watch_buzzer_play_sequence(signal_tune, watch_disable_buzzer);
-    } else {
-        watch_buzzer_play_sequence(signal_tune, NULL);
+    watch_enable_buzzer();
+    watch_buzzer_play_sequence(signal_tune, watch_disable_buzzer);
+    if (movement_state.le_mode_ticks == -1) {
+	// This is somewhat of a hack. In order to play a sequence, we need to
+	// be awake. We should ideally be able to tell movement that we need to
+	// be awake for a given amount of time, but there's no good way to do
+	// this, so we block instead. This might be bad in the case that a
+	// watch face has housekeeping to do after calling this, since it could
+	// in theory do that housekeeping concurrently, but alas.
+	//
+	// You might wonder, why not just put the instruction to go back to
+	// sleep in the callback? It's a good idea, but I can't figure out how
+	// to get it to work - you're basically kicking the can down the road,
+	// since at some point movement will be done doing what it's doing and
+	// have to wait. At that point, you're delaying anyways, but it's
+	// harder to figure out how much time to delay for, since you don't
+	// know how much time has elapsed since starting the sequence. I'd
+	// rather this block than have to read from the RTC to figure that
+	// out.
+	//
+	// Don't ask me what the +50ms is doing. The sequence gets cut short
+	// with the exact time, I have no idea why. 50 extra millisecons seems
+	// like a safe value.
+        delay_ms(sequence_length(signal_tune) * 1000 / 64 + 50);
     }
 }
 
