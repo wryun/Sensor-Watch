@@ -262,6 +262,14 @@ static bool easter_egg_loop(movement_event_type_t event_type, uint8_t watch_face
     watch_date_time date_time = watch_rtc_get_date_time();
     int32_t time_since_alarm_button = date_time.reg - alarm_button_down_time;
 
+    // Sometimes, events are missed. This is particularly bad in this face
+    // since the alarm release flips us back to the normal face. Since we should
+    // never get a 'tick' if the alarm button is already up, detect this
+    // and terminate the fake face.
+    if (event_type == EVENT_TICK && !watch_get_pin_level(BTN_ALARM)) {
+        event_type = EVENT_ALARM_BUTTON_UP;
+    }
+
     switch (event_type) {
         case EVENT_ACTIVATE:
         case EVENT_LOW_ENERGY_UPDATE:
